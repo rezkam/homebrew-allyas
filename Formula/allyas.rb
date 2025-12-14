@@ -14,22 +14,48 @@ class Allyas < Formula
   end
 
   def caveats
+    shell = File.basename(ENV.fetch("SHELL", ""))
+    config_line = "[ -f $(brew --prefix)/etc/allyas.sh ] && . $(brew --prefix)/etc/allyas.sh"
+
+    config_file, reload_cmd, one_liner, restart_cmd =
+      case shell
+      when "zsh"
+        ["~/.zshrc", "source ~/.zshrc", "echo '#{config_line}' >> ~/.zshrc && source ~/.zshrc", "exec zsh -l"]
+      when "bash"
+        ["~/.bashrc (or ~/.bash_profile)", "source ~/.bashrc", "echo '#{config_line}' >> ~/.bashrc && source ~/.bashrc", "exec bash -l"]
+      else
+        ["your shell profile", "restart your shell", nil, "restart your shell session"]
+      end
+
+    oh_my_zsh_note =
+      if shell == "zsh"
+        <<~OHMYZSH
+          🧩 Using Oh My Zsh? Remove the built-in git plugin to avoid alias conflicts:
+            # Open ~/.zshrc, find the line that looks like: plugins=(git ...).
+            # Remove `git` from that list, save the file, then restart zsh:
+            exec zsh -l
+        OHMYZSH
+      else
+        ""
+      end
+
     <<~EOS
       🎉 allyas has been installed!
 
-      To use these aliases, add this line to your shell configuration:
+      Detected shell: #{shell.empty? ? "unknown" : shell}
 
-      For bash (~/.bashrc or ~/.bash_profile):
-        [ -f $(brew --prefix)/etc/allyas.sh ] && . $(brew --prefix)/etc/allyas.sh
-        echo '[ -f $(brew --prefix)/etc/allyas.sh ] && . $(brew --prefix)/etc/allyas.sh' >> ~/.bashrc && source ~/.bashrc
+      Add this line to #{config_file}:
+        #{config_line}
 
-      For zsh (~/.zshrc):
-        [ -f $(brew --prefix)/etc/allyas.sh ] && . $(brew --prefix)/etc/allyas.sh
-        echo '[ -f $(brew --prefix)/etc/allyas.sh ] && . $(brew --prefix)/etc/allyas.sh' >> ~/.zshrc && source ~/.zshrc
+      #{one_liner ? "Run this to append & reload now:\n        #{one_liner}\n" : ""}
 
       Then reload your shell:
-        source ~/.zshrc    # for zsh
-        source ~/.bashrc   # for bash
+        #{reload_cmd}
+
+      To fully restart your shell:
+        #{restart_cmd}
+
+      #{oh_my_zsh_note}
 
       To verify installation:
         ls -la $(brew --prefix)/etc/allyas.sh
