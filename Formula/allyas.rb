@@ -7,8 +7,10 @@ class Allyas < Formula
   license "MIT"
 
   def install
-    # Install the aliases file to Homebrew's etc directory
-    etc.install "allyas.sh"
+    # Keep a copy inside the Cellar
+    pkgshare.install "allyas.sh"
+    # Provide a convenient symlink under etc for sourcing
+    etc.install_symlink pkgshare/"allyas.sh"
   end
 
   def caveats
@@ -36,8 +38,9 @@ class Allyas < Formula
   end
 
   test do
-    # Verify that the aliases file was installed
+    # Verify that the aliases file and symlink were installed
+    assert_predicate pkgshare/"allyas.sh", :exist?
     assert_predicate etc/"allyas.sh", :exist?
-    assert_match "allyas", (etc/"allyas.sh").read
+    assert_match "allyas", (pkgshare/"allyas.sh").read
   end
 end
