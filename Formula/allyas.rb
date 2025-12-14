@@ -21,9 +21,11 @@ class Allyas < Formula
 
       For bash (~/.bashrc or ~/.bash_profile):
         [ -f $(brew --prefix)/etc/allyas.sh ] && . $(brew --prefix)/etc/allyas.sh
+        echo '[ -f $(brew --prefix)/etc/allyas.sh ] && . $(brew --prefix)/etc/allyas.sh' >> ~/.bashrc && source ~/.bashrc
 
       For zsh (~/.zshrc):
         [ -f $(brew --prefix)/etc/allyas.sh ] && . $(brew --prefix)/etc/allyas.sh
+        echo '[ -f $(brew --prefix)/etc/allyas.sh ] && . $(brew --prefix)/etc/allyas.sh' >> ~/.zshrc && source ~/.zshrc
 
       Then reload your shell:
         source ~/.zshrc    # for zsh
