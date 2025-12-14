@@ -38,8 +38,8 @@ Once installed and configured, all aliases are available in your terminal. Try:
 
 ```bash
 ll        # List files with details
-gs        # Git status
-ga .      # Git add all
+gis       # Git status
+gia       # Git add current directory
 ..        # Go up one directory
 ```
 
