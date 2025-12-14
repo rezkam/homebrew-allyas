@@ -1,9 +1,31 @@
 require "minitest/autorun"
 require "pathname"
 
+# Minimal Formula base class mock to load the formula
+class Formula
+  attr_reader :pkgshare, :etc
+
+  def initialize
+    @pkgshare = Pathname.new("/mock/pkgshare")
+    @etc = Pathname.new("/mock/etc")
+  end
+
+  # Mock DSL methods used in the formula
+  def self.desc(description); end
+  def self.homepage(url); end
+  def self.url(url); end
+  def self.sha256(hash); end
+  def self.version(ver); end
+  def self.license(lic); end
+  def self.test(&block); end
+end
+
+# Load the actual formula
+require_relative "../Formula/allyas"
+
 class AllyasFormulaTest < Minitest::Test
   def setup
-    @formula_path = Pathname.new(__dir__).parent / "Formula" / "allyas.rb"
+    @formula = Allyas.new
   end
 
   def test_oh_my_zsh_note_shown_for_zsh
@@ -91,62 +113,13 @@ class AllyasFormulaTest < Minitest::Test
   private
 
   def run_caveats_with_shell(shell)
-    # Read and evaluate the formula to extract the caveats logic
-    formula_code = File.read(@formula_path)
-
-    # Simulate the environment with the specified shell
-    ENV["SHELL"] = shell
-
-    # Extract just the caveats method logic and execute it
-    # This simulates what the formula does without requiring full Homebrew
-    shell_basename = File.basename(shell)
-    config_line = "[ -f $(brew --prefix)/etc/allyas.sh ] && . $(brew --prefix)/etc/allyas.sh"
-
-    config_file, reload_cmd, one_liner, restart_cmd =
-      case shell_basename
-      when "zsh"
-        ["~/.zshrc", "source ~/.zshrc", "echo '#{config_line}' >> ~/.zshrc && source ~/.zshrc", "exec zsh -l"]
-      when "bash"
-        ["~/.bashrc (or ~/.bash_profile)", "source ~/.bashrc", "echo '#{config_line}' >> ~/.bashrc && source ~/.bashrc", "exec bash -l"]
-      else
-        ["your shell profile", "restart your shell", nil, "restart your shell session"]
-      end
-
-    oh_my_zsh_note =
-      if shell_basename == "zsh"
-        <<~OHMYZSH
-          🧩 Using Oh My Zsh? Remove the built-in git plugin to avoid alias conflicts:
-            # Open ~/.zshrc, find the line that looks like: plugins=(git ...).
-            # Remove `git` from that list, save the file, then restart zsh:
-            exec zsh -l
-        OHMYZSH
-      else
-        ""
-      end
-
-    <<~EOS
-      🎉 allyas has been installed!
-
-      Detected shell: #{shell_basename.empty? ? "unknown" : shell_basename}
-
-      Add this line to #{config_file}:
-        #{config_line}
-
-      #{one_liner ? "Run this to append & reload now:\n        #{one_liner}\n" : ""}
-
-      Then reload your shell:
-        #{reload_cmd}
-
-      To fully restart your shell:
-        #{restart_cmd}
-
-      #{oh_my_zsh_note}
-
-      To verify installation:
-        ls -la $(brew --prefix)/etc/allyas.sh
-
-      To update your aliases:
-        brew update && brew upgrade allyas
-    EOS
+    # Set the SHELL environment variable and call the actual formula's caveats method
+    original_shell = ENV["SHELL"]
+    begin
+      ENV["SHELL"] = shell
+      @formula.caveats
+    ensure
+      ENV["SHELL"] = original_shell
+    end
   end
 end
