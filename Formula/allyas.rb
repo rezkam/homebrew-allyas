@@ -9,6 +9,7 @@ class Allyas < Formula
   def install
     # Keep a copy inside the Cellar
     pkgshare.install "allyas.sh"
+    pkgshare.install "helpers"
     # Provide a convenient symlink under etc for sourcing
     etc.install_symlink pkgshare/"allyas.sh"
   end
