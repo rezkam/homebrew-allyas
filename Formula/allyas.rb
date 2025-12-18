@@ -48,12 +48,13 @@ class Allyas < Formula
       Add this line to #{config_file}:
         #{config_line}
 
-      #{one_liner ? "Run this to append & reload now:\n        #{one_liner}\n" : ""}
+      #{one_liner ? "Quick setup (append to config file):\n        #{one_liner}\n" : ""}
 
-      Then reload your shell:
-        #{reload_cmd}
+      ⚠️  IMPORTANT: Restart your shell after installation!
+      Since allyas modifies environment variables and shell configuration,
+      changes will not take effect until you restart your shell session.
 
-      To fully restart your shell:
+      To restart your #{shell.empty? ? "shell" : shell} session:
         #{restart_cmd}
 
       #{oh_my_zsh_note}

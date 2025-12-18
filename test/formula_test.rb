@@ -44,10 +44,6 @@ class AllyasFormulaTest < Minitest::Test
     assert_match(/Add this line to ~\/.zshrc:/, caveats_output,
                  "zsh should show ~/.zshrc as config file")
 
-    # Verify zsh-specific reload command
-    assert_match(/source ~\/.zshrc/, caveats_output,
-                 "zsh should show 'source ~/.zshrc' as reload command")
-
     # Verify zsh-specific one-liner
     assert_match(/echo .+ >> ~\/.zshrc && source ~\/.zshrc/, caveats_output,
                  "zsh should show one-liner with ~/.zshrc")
@@ -55,6 +51,10 @@ class AllyasFormulaTest < Minitest::Test
     # Verify zsh-specific restart command
     assert_match(/exec zsh -l/, caveats_output,
                  "zsh should show 'exec zsh -l' as restart command")
+
+    # Verify restart recommendation is shown
+    assert_match(/IMPORTANT: Restart your shell/, caveats_output,
+                 "zsh should show restart recommendation")
 
     # Verify detected shell is zsh
     assert_match(/Detected shell: zsh/, caveats_output,
@@ -77,10 +77,6 @@ class AllyasFormulaTest < Minitest::Test
     assert_match(/~\/.bashrc \(or ~\/.bash_profile\)/, caveats_output,
                  "bash should show ~/.bashrc (or ~/.bash_profile) as config file")
 
-    # Verify bash-specific reload command
-    assert_match(/source ~\/.bashrc/, caveats_output,
-                 "bash should show 'source ~/.bashrc' as reload command")
-
     # Verify bash-specific one-liner
     assert_match(/echo .+ >> ~\/.bashrc && source ~\/.bashrc/, caveats_output,
                  "bash should show one-liner with ~/.bashrc")
@@ -88,6 +84,10 @@ class AllyasFormulaTest < Minitest::Test
     # Verify bash-specific restart command
     assert_match(/exec bash -l/, caveats_output,
                  "bash should show 'exec bash -l' as restart command")
+
+    # Verify restart recommendation is shown
+    assert_match(/IMPORTANT: Restart your shell/, caveats_output,
+                 "bash should show restart recommendation")
 
     # Verify detected shell is bash
     assert_match(/Detected shell: bash/, caveats_output,
